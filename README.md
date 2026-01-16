@@ -1,4 +1,4 @@
-# WindV - TailwindCSS Visual Editor
+# Windy - TailwindCSS Visual Editor
 
 A standalone TailwindCSS visual editor that can be integrated into any CMS. Built with Preact and Vite.
 
@@ -64,7 +64,7 @@ Elements that are detected as repeatable (list items, navigation links, similar 
 
 ### CMS Integration
 
-To integrate WindV into your CMS:
+To integrate Windy into your CMS:
 
 1. Build the project: `npm run build`
 2. Include the built files from the `dist/` directory
