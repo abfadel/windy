@@ -71,10 +71,19 @@ To integrate WindV into your CMS:
 3. Mount the editor component where needed
 4. Access the HTML content via the editor's state
 
-**Security Note**: The live preview currently uses TailwindCSS CDN for convenience. For production use in a CMS, consider:
-- Bundling TailwindCSS locally instead of using the CDN
-- Implementing Content Security Policy (CSP) headers
-- Validating and sanitizing HTML content before rendering
+**Security Considerations for Production:**
+
+⚠️ **Important**: This editor is designed for trusted content editing in a CMS environment. For production use:
+
+1. **Server-Side Sanitization**: Always sanitize HTML on the server before saving to the database
+2. **Content Security Policy (CSP)**: Implement strict CSP headers to prevent XSS attacks
+3. **Input Validation**: Validate user input on both client and server side
+4. **HTML Sanitization Library**: Consider using [DOMPurify](https://github.com/cure53/DOMPurify) for client-side HTML sanitization
+5. **Local TailwindCSS**: Replace the CDN with a locally bundled version for production
+6. **User Permissions**: Restrict editor access to trusted administrators only
+7. **Content Review**: Implement a review workflow before publishing user-generated content
+
+The editor includes basic HTML escaping for schema-generated content, but additional layers of security should be implemented based on your specific use case.
 
 ## Technology Stack
 

@@ -101,6 +101,27 @@ function isRepeatableElement(node) {
 }
 
 /**
+ * Escape HTML special characters to prevent XSS
+ */
+function escapeHTML(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+/**
+ * Validate tag name to prevent XSS
+ */
+function isValidTagName(tag) {
+  // Only allow alphanumeric characters and hyphens
+  return /^[a-z][a-z0-9\-]*$/i.test(tag);
+}
+
+/**
  * Convert schema back to HTML
  */
 export function schemaToHTML(elements) {
@@ -110,12 +131,23 @@ export function schemaToHTML(elements) {
     const element = elements.find(el => el.id === elementId);
     if (!element) return '';
     
+    // Validate tag name
+    if (!isValidTagName(element.tag)) {
+      console.warn(`Invalid tag name: ${element.tag}`);
+      return '';
+    }
+    
     const attrs = [];
     if (element.classes.length > 0) {
-      attrs.push(`class="${element.classes.join(' ')}"`);
+      // Escape class names
+      const escapedClasses = element.classes.map(c => escapeHTML(c)).join(' ');
+      attrs.push(`class="${escapedClasses}"`);
     }
     for (const [key, value] of Object.entries(element.attributes)) {
-      attrs.push(`${key}="${value}"`);
+      // Validate attribute name and escape value
+      if (/^[a-z][a-z0-9\-]*$/i.test(key)) {
+        attrs.push(`${escapeHTML(key)}="${escapeHTML(value)}"`);
+      }
     }
     
     const attrString = attrs.length > 0 ? ' ' + attrs.join(' ') : '';
@@ -124,7 +156,8 @@ export function schemaToHTML(elements) {
       .map(childId => buildElement(childId))
       .join('');
     
-    const textContent = element.text || '';
+    // Escape text content
+    const textContent = escapeHTML(element.text || '');
     
     return `<${element.tag}${attrString}>${textContent}${childrenHTML}</${element.tag}>`;
   }

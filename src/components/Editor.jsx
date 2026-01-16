@@ -2,6 +2,20 @@ import { h } from 'preact';
 import { useState, useEffect, useRef } from 'preact/hooks';
 import { parseHTMLToSchema, schemaToHTML, generateFormFields } from '../utils/schemaParser';
 
+/**
+ * WindV Visual Editor Component
+ * 
+ * SECURITY CONSIDERATIONS:
+ * - This editor is designed for trusted content editing in a CMS environment
+ * - HTML input is rendered in an isolated iframe for preview
+ * - Schema-to-HTML conversion includes basic HTML escaping for text content
+ * - For production use, implement additional sanitization:
+ *   1. Server-side HTML sanitization before saving
+ *   2. Content Security Policy (CSP) headers
+ *   3. Validate and sanitize user input on the backend
+ *   4. Consider using a library like DOMPurify for client-side sanitization
+ */
+
 export default function Editor() {
   const [htmlCode, setHtmlCode] = useState(getDefaultHTML());
   const [schema, setSchema] = useState([]);
@@ -86,15 +100,19 @@ export default function Editor() {
       el.addEventListener('click', (e) => {
         e.stopPropagation();
         const elementId = el.getAttribute('data-element-id');
-        const element = schema.find(s => s.id === elementId);
-        if (element) {
-          setSelectedElement(element);
-          // Highlight selected element
-          doc.querySelectorAll('.editable-active').forEach(active => {
-            active.classList.remove('editable-active');
-          });
-          el.classList.add('editable-active');
-        }
+        // Use functional state update to get the latest schema
+        setSchema(currentSchema => {
+          const element = currentSchema.find(s => s.id === elementId);
+          if (element) {
+            setSelectedElement(element);
+            // Highlight selected element
+            doc.querySelectorAll('.editable-active').forEach(active => {
+              active.classList.remove('editable-active');
+            });
+            el.classList.add('editable-active');
+          }
+          return currentSchema; // Return unchanged schema
+        });
       });
       
       // Make text editable on double-click
