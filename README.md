@@ -71,6 +71,11 @@ To integrate WindV into your CMS:
 3. Mount the editor component where needed
 4. Access the HTML content via the editor's state
 
+**Security Note**: The live preview currently uses TailwindCSS CDN for convenience. For production use in a CMS, consider:
+- Bundling TailwindCSS locally instead of using the CDN
+- Implementing Content Security Policy (CSP) headers
+- Validating and sanitizing HTML content before rendering
+
 ## Technology Stack
 
 - **Preact**: Lightweight React alternative (3KB)

@@ -55,10 +55,26 @@ export default function Editor() {
     `);
     doc.close();
     
-    // Add click handlers for inline editing
-    setTimeout(() => {
-      makeElementsEditable(doc);
-    }, 500);
+    // Wait for iframe to fully load before making elements editable
+    const handleLoad = () => {
+      // Check if body content is ready
+      const checkReady = setInterval(() => {
+        if (doc.body && doc.body.children.length > 0) {
+          clearInterval(checkReady);
+          makeElementsEditable(doc);
+        }
+      }, 100);
+      
+      // Safety timeout to prevent infinite checking
+      setTimeout(() => clearInterval(checkReady), 5000);
+    };
+    
+    // Use iframe load event or fallback to timeout
+    if (iframe.contentWindow) {
+      iframe.contentWindow.addEventListener('load', handleLoad, { once: true });
+    } else {
+      setTimeout(handleLoad, 500);
+    }
   }
   
   function makeElementsEditable(doc) {
